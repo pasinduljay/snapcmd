@@ -44,7 +44,7 @@ export default function SharedSnippet({ slug }) {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-6">
+    <div className="flex min-h-dvh items-center justify-center p-6">
       <div className="w-full max-w-lg">
         <div className="mb-6 flex items-center justify-center gap-2 text-muted-foreground">
           <Terminal className="size-4 text-primary" />

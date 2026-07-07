@@ -2,7 +2,7 @@ import { Card, CardContent } from '@/components/ui/card'
 
 export default function SetupNotice() {
   return (
-    <div className="flex min-h-screen items-center justify-center p-6">
+    <div className="flex min-h-dvh items-center justify-center p-6">
       <Card className="w-full max-w-lg">
         <CardContent>
           <h1 className="font-heading text-xl font-semibold">Supabase is not configured yet</h1>

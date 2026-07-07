@@ -9,6 +9,7 @@ import {
   Upload,
   Plus,
   Settings2,
+  Archive,
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useTheme } from '../hooks/useTheme'
@@ -20,6 +21,7 @@ import { Spinner } from '@/components/ui/spinner'
 import SnippetCard from './SnippetCard'
 import SnippetModal from './SnippetModal'
 import CategoryManager from './CategoryManager'
+import BackupManager from './BackupManager'
 
 const DEFAULT_CATEGORIES = ['Docker', 'Kubernetes', 'Linux', 'Windows', 'AWS', 'Git', 'General']
 const FALLBACK_CATEGORY = 'General'
@@ -35,6 +37,7 @@ export default function Vault({ session }) {
   const [activeCategory, setActiveCategory] = useState('All')
   const [modal, setModal] = useState(null) // null | { snippet: object|null }
   const [managing, setManaging] = useState(false)
+  const [backingUp, setBackingUp] = useState(false)
   const searchRef = useRef(null)
   const importRef = useRef(null)
 
@@ -274,7 +277,7 @@ export default function Vault({ session }) {
   }, [snippets, query, activeCategory])
 
   return (
-    <div className="mx-auto min-h-screen max-w-6xl px-4 pb-16 sm:px-6">
+    <div className="mx-auto min-h-dvh max-w-6xl px-4 pb-16 sm:px-6">
       {/* Header */}
       <header className="sticky top-0 z-10 -mx-4 border-b bg-background/90 px-4 py-4 backdrop-blur sm:-mx-6 sm:px-6">
         <div className="flex items-center gap-3">
@@ -303,8 +306,8 @@ export default function Vault({ session }) {
           >
             {theme === 'dark' ? <Sun /> : <Moon />}
           </Button>
-          <Button variant="outline" onClick={() => supabase.auth.signOut()}>
-            <LogOut /> Sign out
+          <Button variant="outline" onClick={() => supabase.auth.signOut()} title="Sign out">
+            <LogOut /> <span className="hidden sm:inline">Sign out</span>
           </Button>
         </div>
 
@@ -347,11 +350,14 @@ export default function Vault({ session }) {
           {filtered.length} snippet{filtered.length === 1 ? '' : 's'}
         </p>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={exportJson}>
-            <Download /> Export
+          <Button variant="outline" size="sm" onClick={() => setBackingUp(true)} title="Backups">
+            <Archive /> <span className="hidden sm:inline">Backups</span>
           </Button>
-          <Button variant="outline" size="sm" onClick={() => importRef.current?.click()}>
-            <Upload /> Import
+          <Button variant="outline" size="sm" onClick={exportJson} title="Export">
+            <Download /> <span className="hidden sm:inline">Export</span>
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => importRef.current?.click()} title="Import">
+            <Upload /> <span className="hidden sm:inline">Import</span>
           </Button>
           <input ref={importRef} type="file" accept=".json" onChange={importJson} className="hidden" />
           <Button size="sm" onClick={() => setModal({ snippet: null })}>
@@ -415,6 +421,17 @@ export default function Vault({ session }) {
           onRename={renameCategory}
           onDelete={deleteCategory}
           onClose={() => setManaging(false)}
+        />
+      )}
+
+      {backingUp && (
+        <BackupManager
+          session={session}
+          snippets={snippets}
+          categories={categories}
+          ensureCategory={ensureCategory}
+          onRestored={(restored) => setSnippets((prev) => [...restored, ...prev])}
+          onClose={() => setBackingUp(false)}
         />
       )}
     </div>
