@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { Terminal } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
+import Logo from './Logo'
 
 export default function Auth() {
   const [mode, setMode] = useState('signin') // 'signin' | 'signup'
@@ -42,7 +42,7 @@ export default function Auth() {
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-lg border bg-card text-primary shadow-xs">
-            <Terminal className="size-6" strokeWidth={2.25} />
+            <Logo className="size-6" />
           </div>
           <h1 className="font-heading text-2xl font-bold tracking-tight">Snapcmd</h1>
           <p className="mt-1 text-sm text-muted-foreground">

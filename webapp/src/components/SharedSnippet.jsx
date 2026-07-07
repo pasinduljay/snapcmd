@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Terminal, Copy, Check } from 'lucide-react'
+import { Copy, Check } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
+import Logo from './Logo'
 
 // Public, unauthenticated view for a shared snippet — rendered when the URL
 // path is /s/:slug. Relies on the "Anyone can read shared snippets" RLS
@@ -47,7 +48,7 @@ export default function SharedSnippet({ slug }) {
     <div className="flex min-h-dvh items-center justify-center p-6">
       <div className="w-full max-w-lg">
         <div className="mb-6 flex items-center justify-center gap-2 text-muted-foreground">
-          <Terminal className="size-4 text-primary" />
+          <Logo className="size-4 text-primary" />
           <span className="text-sm font-medium">Shared from Snapcmd</span>
         </div>
 

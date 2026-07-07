@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  Terminal,
   Search,
   Sun,
   Moon,
@@ -22,6 +21,7 @@ import SnippetCard from './SnippetCard'
 import SnippetModal from './SnippetModal'
 import CategoryManager from './CategoryManager'
 import BackupManager from './BackupManager'
+import Logo from './Logo'
 
 const DEFAULT_CATEGORIES = ['Docker', 'Kubernetes', 'Linux', 'Windows', 'AWS', 'Git', 'General']
 const FALLBACK_CATEGORY = 'General'
@@ -282,7 +282,7 @@ export default function Vault({ session }) {
       <header className="sticky top-0 z-10 -mx-4 border-b bg-background/90 px-4 py-4 backdrop-blur sm:-mx-6 sm:px-6">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-card text-primary shadow-xs">
-            <Terminal className="size-4.5" strokeWidth={2.25} />
+            <Logo className="size-4.5" />
           </div>
           <h1 className="hidden font-heading text-lg font-bold tracking-tight sm:block">Snapcmd</h1>
 
