@@ -6,7 +6,9 @@ one searchable place, organized by category, so you can find and copy them
 instead of looking them up again every time.
 
 A Chrome extension (`extension/`) reads the same account, so snippets are
-also reachable without opening the website.
+also reachable without opening the website. A Windows desktop app
+(`desktop/`) is also available for fully offline, local-only use — no
+account, no internet connection, everything stored on your own machine.
 
 ## Features
 
@@ -22,9 +24,10 @@ also reachable without opening the website.
 ## Technology
 
 - **Frontend:** React, Vite, Tailwind CSS
-- **Backend:** Supabase (Postgres database, authentication, and access control)
+- **Backend (web + extension):** Supabase (Postgres database, authentication, access control)
+- **Backend (desktop):** local SQLite via Tauri — no server, fully offline
 - **Hosting:** Vercel
-- **Automation:** GitHub Actions applies database changes automatically
+- **Automation:** GitHub Actions applies database changes and publishes releases automatically
 
 ## Deploying your own copy
 
@@ -171,6 +174,45 @@ can configure:
 4. In Supabase dashboard → **Authentication → URL Configuration → Redirect
    URLs**, add `https://<extension-id>.chromiumapp.org/` (the same ID from
    step 1).
+
+## Desktop app (Windows)
+
+The desktop app (`desktop/`) is a completely separate, offline version —
+no Supabase, no account, no internet connection required. It stores
+everything in a local SQLite database on your own machine
+(`%APPDATA%\com.snapcmd.app\snapcmd.db`). Same look, same features
+(search, categories, placeholders, backup/restore snapshots, import/export)
+minus the ones that only make sense with a server: public share links and
+multi-device sync.
+
+It's built with [Tauri](https://tauri.app), which wraps the same
+React/Tailwind frontend used elsewhere in this repo in a native shell using
+Windows' built-in WebView2 — not a bundled Chromium like Electron — so the
+installer is a few MB instead of 150MB+.
+
+**Prerequisites** (one-time machine setup, not per-project):
+
+- [Rust](https://www.rust-lang.org/tools/install) (`rustup`)
+- Microsoft C++ Build Tools — via
+  [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/),
+  "Desktop development with C++" workload
+
+**Run it in development:**
+
+```
+cd desktop
+npm install
+npm run tauri dev
+```
+
+**Build a Windows installer:**
+
+```
+npm run tauri build
+```
+
+Produces an `.exe` (NSIS) and `.msi` installer under
+`desktop/src-tauri/target/release/bundle/`.
 
 ## Backups
 
