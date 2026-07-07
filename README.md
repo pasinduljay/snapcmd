@@ -180,7 +180,7 @@ can configure:
 The desktop app (`desktop/`) is a completely separate, offline version —
 no Supabase, no account, no internet connection required. It stores
 everything in a local SQLite database on your own machine
-(`%APPDATA%\com.snapcmd.app\snapcmd.db`). Same look, same features
+(`%APPDATA%\com.snapcmd.desktop\snapcmd.db`). Same look, same features
 (search, categories, placeholders, backup/restore snapshots, import/export)
 minus the ones that only make sense with a server: public share links and
 multi-device sync.
@@ -195,7 +195,17 @@ installer is a few MB instead of 150MB+.
 - [Rust](https://www.rust-lang.org/tools/install) (`rustup`)
 - Microsoft C++ Build Tools — via
   [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/),
-  "Desktop development with C++" workload
+  select the **"Desktop development with C++"** workload. The Windows SDK
+  doesn't always get included automatically with that workload — if `cargo
+  build` fails with `cannot open input file 'kernel32.lib'`, open the Visual
+  Studio Installer → Modify, and explicitly add a Windows 10/11 SDK
+  component.
+- **Build from PowerShell, not Git Bash.** Git for Windows ships its own
+  `link` utility that shadows MSVC's `link.exe` on PATH, which produces a
+  confusing "extra operand" linker error that has nothing to do with your
+  code.
+- The very first `cargo build` compiles every Rust dependency from scratch
+  (~10 minutes); after that, builds are incremental and much faster.
 
 **Run it in development:**
 
