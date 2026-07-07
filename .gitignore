@@ -1,0 +1,8 @@
+.env
+.env.local
+node_modules
+dist
+.supabase-token
+.supabase-db-password
+supabase/.temp
+.claude/settings.local.json
