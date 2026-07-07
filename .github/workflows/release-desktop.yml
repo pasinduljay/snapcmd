@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "desktop/package.json"
+      - "package.json"
   workflow_dispatch: {}
 
 permissions:
@@ -15,10 +15,11 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history, needed for auto-generated release notes
 
       - name: Read version
         id: version
-        working-directory: desktop
         run: echo "version=$(node -p "require('./package.json').version")" >> $env:GITHUB_OUTPUT
 
       - name: Check if this version was already released
@@ -43,7 +44,6 @@ jobs:
 
       - name: Install frontend dependencies
         if: steps.check.outputs.exists == 'false'
-        working-directory: desktop
         run: npm ci
 
       - name: Build and release
@@ -54,10 +54,10 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
-          projectPath: desktop
           tagName: v${{ steps.version.outputs.version }}
-          releaseName: "Snapcmd Desktop v${{ steps.version.outputs.version }}"
-          releaseBody: "See assets below to download. `latest.json` is what the in-app updater reads — don't remove it."
+          releaseName: "Snapcmd v${{ steps.version.outputs.version }}"
+          releaseBody: "`latest.json` is what the in-app updater reads — don't remove it from this release.\n\n## What's changed"
+          generateReleaseNotes: true
           releaseDraft: false
           prerelease: false
           includeUpdaterJson: true
