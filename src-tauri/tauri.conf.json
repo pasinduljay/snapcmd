@@ -36,7 +36,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDgwMjVDRkFBNjFGQ0UyMDEKUldRQjR2eGhxczhsZ0g5L0xNR0JFRFRTUHhBMzNkdTh6M24ycGNKdFFNdFdOdllDUkxnWFRJdjgK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDkyQTA0MTEzODgyMkJCQkIKUldTN3V5S0lFMEdna2pZUUJnQm5kNXVCbWNrK2VveW82eXVZWGxkOGRLVjZFTUVhdVV4TEw5RDkK",
       "endpoints": [
         "https://github.com/pasinduljay/snapcmd/releases/latest/download/latest.json"
       ],
