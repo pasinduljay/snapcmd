@@ -22,6 +22,7 @@ import SnippetModal from './SnippetModal'
 import CategoryManager from './CategoryManager'
 import BackupManager from './BackupManager'
 import Logo from './Logo'
+import Wordmark from './Wordmark'
 
 const DEFAULT_CATEGORIES = ['Docker', 'Kubernetes', 'Linux', 'Windows', 'AWS', 'Git', 'General']
 const FALLBACK_CATEGORY = 'General'
@@ -284,7 +285,7 @@ export default function Vault({ session }) {
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-card text-primary shadow-xs">
             <Logo className="size-4.5" />
           </div>
-          <h1 className="hidden font-heading text-lg font-bold tracking-tight sm:block">Snapcmd</h1>
+          <h1 className="hidden sm:block"><Wordmark className="text-lg" /></h1>
 
           <div className="relative ml-auto w-full max-w-md">
             <Search className="pointer-events-none absolute inset-y-0 left-3 my-auto size-4 text-muted-foreground" />
