@@ -32,15 +32,31 @@ function MessageBanner({ message }) {
 export default function AccountSettings({ session, onClose }) {
   const currentEmail = session.user.email
 
+  const [editingEmail, setEditingEmail] = useState(false)
+  const [newEmail, setNewEmail] = useState('')
+  const [confirmEmail, setConfirmEmail] = useState('')
+  const [emailMessage, setEmailMessage] = useState(null)
+  const [emailBusy, setEmailBusy] = useState(false)
+
+  const [editingPassword, setEditingPassword] = useState(false)
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordMessage, setPasswordMessage] = useState(null)
   const [passwordBusy, setPasswordBusy] = useState(false)
 
-  const [newEmail, setNewEmail] = useState('')
-  const [confirmEmail, setConfirmEmail] = useState('')
-  const [emailMessage, setEmailMessage] = useState(null)
-  const [emailBusy, setEmailBusy] = useState(false)
+  function cancelEmail() {
+    setEditingEmail(false)
+    setNewEmail('')
+    setConfirmEmail('')
+    setEmailMessage(null)
+  }
+
+  function cancelPassword() {
+    setEditingPassword(false)
+    setPassword('')
+    setConfirmPassword('')
+    setPasswordMessage(null)
+  }
 
   async function handlePasswordSubmit(e) {
     e.preventDefault()
@@ -110,86 +126,118 @@ export default function AccountSettings({ session, onClose }) {
 
         <DialogPanel className="flex flex-col gap-5">
           <div>
-            <p className="text-sm font-medium">Current email</p>
-            <p className="mt-1 text-sm text-muted-foreground">{currentEmail}</p>
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <p className="text-sm font-medium">Email</p>
+                <p className="mt-1 text-sm text-muted-foreground">{currentEmail}</p>
+              </div>
+              {!editingEmail && (
+                <Button variant="outline" size="sm" onClick={() => setEditingEmail(true)}>
+                  Change
+                </Button>
+              )}
+            </div>
+
+            {editingEmail && (
+              <form onSubmit={handleEmailSubmit} className="mt-4 flex flex-col gap-4">
+                <div>
+                  <Label htmlFor="account-new-email">New email</Label>
+                  <Input
+                    id="account-new-email"
+                    type="email"
+                    required
+                    autoFocus
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="mt-1.5"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="account-confirm-email">Confirm new email</Label>
+                  <Input
+                    id="account-confirm-email"
+                    type="email"
+                    required
+                    value={confirmEmail}
+                    onChange={(e) => setConfirmEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="mt-1.5"
+                  />
+                </div>
+
+                <MessageBanner message={emailMessage} />
+
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" className="flex-1" onClick={cancelEmail}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" loading={emailBusy} className="flex-1">
+                    Update email
+                  </Button>
+                </div>
+              </form>
+            )}
           </div>
 
           <Separator />
 
-          <form onSubmit={handleEmailSubmit} className="flex flex-col gap-4">
-            <p className="text-sm font-medium">Change email</p>
-            <div>
-              <Label htmlFor="account-new-email">New email</Label>
-              <Input
-                id="account-new-email"
-                type="email"
-                required
-                value={newEmail}
-                onChange={(e) => setNewEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="mt-1.5"
-              />
-            </div>
-            <div>
-              <Label htmlFor="account-confirm-email">Confirm new email</Label>
-              <Input
-                id="account-confirm-email"
-                type="email"
-                required
-                value={confirmEmail}
-                onChange={(e) => setConfirmEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="mt-1.5"
-              />
+          <div>
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-medium">Password</p>
+              {!editingPassword && (
+                <Button variant="outline" size="sm" onClick={() => setEditingPassword(true)}>
+                  Change
+                </Button>
+              )}
             </div>
 
-            <MessageBanner message={emailMessage} />
+            {editingPassword && (
+              <form onSubmit={handlePasswordSubmit} className="mt-4 flex flex-col gap-4">
+                <div>
+                  <Label htmlFor="account-new-password">New password</Label>
+                  <Input
+                    id="account-new-password"
+                    type="password"
+                    required
+                    autoFocus
+                    minLength={MIN_PASSWORD_LENGTH}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="mt-1.5"
+                  />
+                  <p className="mt-1.5 text-xs text-muted-foreground">
+                    At least {MIN_PASSWORD_LENGTH} characters.
+                  </p>
+                </div>
+                <div>
+                  <Label htmlFor="account-confirm-password">Confirm new password</Label>
+                  <Input
+                    id="account-confirm-password"
+                    type="password"
+                    required
+                    minLength={MIN_PASSWORD_LENGTH}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="mt-1.5"
+                  />
+                </div>
 
-            <Button type="submit" loading={emailBusy}>
-              Update email
-            </Button>
-          </form>
+                <MessageBanner message={passwordMessage} />
 
-          <Separator />
-
-          <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-4">
-            <p className="text-sm font-medium">Change password</p>
-            <div>
-              <Label htmlFor="account-new-password">New password</Label>
-              <Input
-                id="account-new-password"
-                type="password"
-                required
-                minLength={MIN_PASSWORD_LENGTH}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="mt-1.5"
-              />
-              <p className="mt-1.5 text-xs text-muted-foreground">
-                At least {MIN_PASSWORD_LENGTH} characters.
-              </p>
-            </div>
-            <div>
-              <Label htmlFor="account-confirm-password">Confirm new password</Label>
-              <Input
-                id="account-confirm-password"
-                type="password"
-                required
-                minLength={MIN_PASSWORD_LENGTH}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="••••••••"
-                className="mt-1.5"
-              />
-            </div>
-
-            <MessageBanner message={passwordMessage} />
-
-            <Button type="submit" loading={passwordBusy}>
-              Update password
-            </Button>
-          </form>
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" className="flex-1" onClick={cancelPassword}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" loading={passwordBusy} className="flex-1">
+                    Update password
+                  </Button>
+                </div>
+              </form>
+            )}
+          </div>
         </DialogPanel>
       </DialogContent>
     </Dialog>

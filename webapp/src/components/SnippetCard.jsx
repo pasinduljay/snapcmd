@@ -64,7 +64,7 @@ export default function SnippetCard({ snippet, onEdit, onDelete, onShare }) {
               {snippet.category}
             </Badge>
           </div>
-          <div className="flex shrink-0 gap-1 opacity-0 transition group-hover:opacity-100">
+          <div className="flex shrink-0 gap-1 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
             <Button
               variant="ghost"
               size="icon-sm"

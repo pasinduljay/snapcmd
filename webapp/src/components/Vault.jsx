@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, lazy, Suspense } from 'react'
 import {
   Search,
   Sun,
@@ -19,12 +19,15 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
 import SnippetCard from './SnippetCard'
-import SnippetModal from './SnippetModal'
-import CategoryManager from './CategoryManager'
-import BackupManager from './BackupManager'
-import AccountSettings from './AccountSettings'
 import Logo from './Logo'
 import Wordmark from './Wordmark'
+
+// Dialogs only mount once opened — splitting them out keeps the initial
+// bundle lighter, which matters most on mobile.
+const SnippetModal = lazy(() => import('./SnippetModal'))
+const CategoryManager = lazy(() => import('./CategoryManager'))
+const BackupManager = lazy(() => import('./BackupManager'))
+const AccountSettings = lazy(() => import('./AccountSettings'))
 
 const DEFAULT_CATEGORIES = ['Docker', 'Kubernetes', 'Linux', 'Windows', 'AWS', 'Git', 'General']
 const FALLBACK_CATEGORY = 'General'
@@ -283,7 +286,7 @@ export default function Vault({ session }) {
   return (
     <div className="mx-auto min-h-dvh max-w-6xl px-4 pb-16 sm:px-6">
       {/* Header */}
-      <header className="sticky top-0 z-10 -mx-4 border-b bg-background/90 px-4 py-4 backdrop-blur sm:-mx-6 sm:px-6">
+      <header className="sticky top-0 z-10 -mx-4 border-b bg-background px-4 py-4 sm:-mx-6 sm:px-6">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-card text-primary shadow-xs">
             <Logo className="size-4.5" />
@@ -412,39 +415,41 @@ export default function Vault({ session }) {
         </div>
       )}
 
-      {modal && (
-        <SnippetModal
-          snippet={modal.snippet}
-          categories={categories}
-          onSave={saveSnippet}
-          onClose={() => setModal(null)}
-        />
-      )}
+      <Suspense fallback={null}>
+        {modal && (
+          <SnippetModal
+            snippet={modal.snippet}
+            categories={categories}
+            onSave={saveSnippet}
+            onClose={() => setModal(null)}
+          />
+        )}
 
-      {managing && (
-        <CategoryManager
-          categories={categories}
-          counts={counts}
-          onRename={renameCategory}
-          onDelete={deleteCategory}
-          onClose={() => setManaging(false)}
-        />
-      )}
+        {managing && (
+          <CategoryManager
+            categories={categories}
+            counts={counts}
+            onRename={renameCategory}
+            onDelete={deleteCategory}
+            onClose={() => setManaging(false)}
+          />
+        )}
 
-      {backingUp && (
-        <BackupManager
-          session={session}
-          snippets={snippets}
-          categories={categories}
-          ensureCategory={ensureCategory}
-          onRestored={(restored) => setSnippets((prev) => [...restored, ...prev])}
-          onClose={() => setBackingUp(false)}
-        />
-      )}
+        {backingUp && (
+          <BackupManager
+            session={session}
+            snippets={snippets}
+            categories={categories}
+            ensureCategory={ensureCategory}
+            onRestored={(restored) => setSnippets((prev) => [...restored, ...prev])}
+            onClose={() => setBackingUp(false)}
+          />
+        )}
 
-      {accountOpen && (
-        <AccountSettings session={session} onClose={() => setAccountOpen(false)} />
-      )}
+        {accountOpen && (
+          <AccountSettings session={session} onClose={() => setAccountOpen(false)} />
+        )}
+      </Suspense>
     </div>
   )
 }
