@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
 import SnippetCard from './components/SnippetCard'
+import UpdateBanner from './components/UpdateBanner'
 import Logo from './components/Logo'
 import Wordmark from './components/Wordmark'
 
@@ -165,6 +166,9 @@ export default function App() {
 
   return (
     <div className="mx-auto min-h-dvh max-w-6xl px-4 pb-16 sm:px-6">
+      <div className="-mx-4 sm:-mx-6">
+        <UpdateBanner />
+      </div>
       <header className="sticky top-0 z-10 -mx-4 border-b bg-background px-4 py-4 sm:-mx-6 sm:px-6">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-card text-primary shadow-xs">

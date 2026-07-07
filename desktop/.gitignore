@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Updater signing key — NEVER commit. Only the .pub file (embedded in
+# tauri.conf.json) is safe to be public.
+src-tauri/*.key
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
