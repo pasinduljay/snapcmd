@@ -1,0 +1,29 @@
+name: Deploy edge functions
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/functions/**"
+  workflow_dispatch: {}
+
+concurrency:
+  group: supabase-functions
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Deploy functions
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase functions deploy delete-account --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}

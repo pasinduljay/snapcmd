@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { TriangleAlert } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -44,6 +45,11 @@ export default function AccountSettings({ session, onClose }) {
   const [passwordMessage, setPasswordMessage] = useState(null)
   const [passwordBusy, setPasswordBusy] = useState(false)
 
+  const [deletingAccount, setDeletingAccount] = useState(false)
+  const [deleteConfirmInput, setDeleteConfirmInput] = useState('')
+  const [deleteMessage, setDeleteMessage] = useState(null)
+  const [deleteBusy, setDeleteBusy] = useState(false)
+
   function cancelEmail() {
     setEditingEmail(false)
     setNewEmail('')
@@ -56,6 +62,12 @@ export default function AccountSettings({ session, onClose }) {
     setPassword('')
     setConfirmPassword('')
     setPasswordMessage(null)
+  }
+
+  function cancelDelete() {
+    setDeletingAccount(false)
+    setDeleteConfirmInput('')
+    setDeleteMessage(null)
   }
 
   async function handlePasswordSubmit(e) {
@@ -76,6 +88,26 @@ export default function AccountSettings({ session, onClose }) {
       setPasswordMessage({ type: 'error', text: err.message })
     } finally {
       setPasswordBusy(false)
+    }
+  }
+
+  async function handleDeleteAccount(e) {
+    e.preventDefault()
+    setDeleteMessage(null)
+    if (deleteConfirmInput.trim().toLowerCase() !== currentEmail.toLowerCase()) {
+      setDeleteMessage({ type: 'error', text: "That doesn't match your email." })
+      return
+    }
+    setDeleteBusy(true)
+    try {
+      const { error } = await supabase.functions.invoke('delete-account')
+      if (error) throw error
+      // The account and everything tied to it (snippets, categories,
+      // backups) is already gone server-side — just end the local session.
+      await supabase.auth.signOut()
+    } catch (err) {
+      setDeleteMessage({ type: 'error', text: err.message })
+      setDeleteBusy(false)
     }
   }
 
@@ -233,6 +265,60 @@ export default function AccountSettings({ session, onClose }) {
                   </Button>
                   <Button type="submit" loading={passwordBusy} className="flex-1">
                     Update password
+                  </Button>
+                </div>
+              </form>
+            )}
+          </div>
+
+          <Separator />
+
+          <div>
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-medium text-destructive-foreground">Danger zone</p>
+              {!deletingAccount && (
+                <Button variant="destructive-outline" size="sm" onClick={() => setDeletingAccount(true)}>
+                  Delete account
+                </Button>
+              )}
+            </div>
+
+            {deletingAccount && (
+              <form onSubmit={handleDeleteAccount} className="mt-4 flex flex-col gap-4">
+                <p className="flex gap-2 rounded-lg bg-destructive/8 px-3 py-2 text-sm text-destructive-foreground dark:bg-destructive/16">
+                  <TriangleAlert className="mt-0.5 size-4 shrink-0" />
+                  This permanently deletes your account and every snippet,
+                  category, and backup in it. This cannot be undone.
+                </p>
+                <div>
+                  <Label htmlFor="account-delete-confirm">
+                    Type <span className="font-mono">{currentEmail}</span> to confirm
+                  </Label>
+                  <Input
+                    id="account-delete-confirm"
+                    required
+                    autoFocus
+                    value={deleteConfirmInput}
+                    onChange={(e) => setDeleteConfirmInput(e.target.value)}
+                    placeholder={currentEmail}
+                    className="mt-1.5"
+                  />
+                </div>
+
+                <MessageBanner message={deleteMessage} />
+
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" className="flex-1" onClick={cancelDelete}>
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="destructive"
+                    loading={deleteBusy}
+                    disabled={deleteConfirmInput.trim().toLowerCase() !== currentEmail.toLowerCase()}
+                    className="flex-1"
+                  >
+                    Delete my account
                   </Button>
                 </div>
               </form>

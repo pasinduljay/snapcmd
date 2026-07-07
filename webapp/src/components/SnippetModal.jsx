@@ -88,7 +88,7 @@ export default function SnippetModal({ snippet, categories, onSave, onClose }) {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <Label>Category</Label>
                 <Select value={category} onValueChange={setCategory}>
