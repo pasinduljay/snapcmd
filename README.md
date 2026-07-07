@@ -5,10 +5,9 @@ use often — Docker, Kubernetes, Linux, Windows, AWS, and anything else — in
 one searchable place, organized by category, so you can find and copy them
 instead of looking them up again every time.
 
-A Chrome extension (`extension/`) reads the same account, so snippets are
-also reachable without opening the website. A Windows desktop app
-(`desktop/`) is also available for fully offline, local-only use — no
-account, no internet connection, everything stored on your own machine.
+A Windows desktop app (`desktop/`) is also available for fully offline,
+local-only use — no account, no internet connection, everything stored on
+your own machine.
 
 ## Features
 
@@ -24,7 +23,7 @@ account, no internet connection, everything stored on your own machine.
 ## Technology
 
 - **Frontend:** React, Vite, Tailwind CSS
-- **Backend (web + extension):** Supabase (Postgres database, authentication, access control)
+- **Backend (web):** Supabase (Postgres database, authentication, access control)
 - **Backend (desktop):** local SQLite via Tauri — no server, fully offline
 - **Hosting:** Vercel
 - **Automation:** GitHub Actions applies database changes and publishes releases automatically
@@ -121,59 +120,6 @@ on, every time you push a change to `main`, Vercel redeploys automatically.
    ```
 
    Open the address shown in the terminal (usually http://localhost:5173).
-
-## Chrome extension
-
-The extension (`extension/`) is a separate small app that talks to the same
-Supabase project as the website — signing in there gives you the same
-snippets, no separate account.
-
-**Build and load it:**
-
-```
-cd extension
-npm install
-cp .env.example .env
-```
-
-(`copy` instead of `cp` in Windows Command Prompt.)
-
-Fill in `.env` with the same two values as `webapp/.env`, then:
-
-```
-npm run build
-```
-
-In Chrome, go to `chrome://extensions`, turn on **Developer mode** (top
-right), click **Load unpacked**, and select `extension/dist`. Click the
-extension's icon to open the popup.
-
-**Releases:** bump the `version` field in both `extension/package.json` and
-`extension/public/manifest.json`, and push to `main`. A GitHub Actions
-workflow (`release-extension.yml`) builds it, zips `dist/`, and publishes a
-GitHub Release with auto-generated notes (grouped commits, contributors —
-same format GitHub shows on any release page) and the zip attached. Needs
-two more repository secrets, same values as `webapp/.env`:
-
-| Secret name | Value |
-|---|---|
-| `VITE_SUPABASE_URL` | your Supabase Project URL |
-| `VITE_SUPABASE_ANON_KEY` | your Supabase Publishable key |
-
-**Email/password sign-in works immediately.** Google sign-in needs one-time
-setup, same idea as the Resend setup earlier — external services only you
-can configure:
-
-1. In `chrome://extensions`, copy this extension's **ID** (a long string
-   under its name, only appears once it's loaded).
-2. In [Google Cloud Console](https://console.cloud.google.com/apis/credentials),
-   create an **OAuth 2.0 Client ID** of type **Chrome Extension**, using
-   that ID.
-3. In Supabase dashboard → **Authentication → Providers → Google**, enable
-   it and paste in the Client ID/Secret from step 2.
-4. In Supabase dashboard → **Authentication → URL Configuration → Redirect
-   URLs**, add `https://<extension-id>.chromiumapp.org/` (the same ID from
-   step 1).
 
 ## Desktop app (Windows)
 
