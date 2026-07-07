@@ -9,6 +9,7 @@ import {
   Plus,
   Settings2,
   Archive,
+  UserRound,
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useTheme } from '../hooks/useTheme'
@@ -21,6 +22,7 @@ import SnippetCard from './SnippetCard'
 import SnippetModal from './SnippetModal'
 import CategoryManager from './CategoryManager'
 import BackupManager from './BackupManager'
+import AccountSettings from './AccountSettings'
 import Logo from './Logo'
 import Wordmark from './Wordmark'
 
@@ -39,6 +41,7 @@ export default function Vault({ session }) {
   const [modal, setModal] = useState(null) // null | { snippet: object|null }
   const [managing, setManaging] = useState(false)
   const [backingUp, setBackingUp] = useState(false)
+  const [accountOpen, setAccountOpen] = useState(false)
   const searchRef = useRef(null)
   const importRef = useRef(null)
 
@@ -307,6 +310,9 @@ export default function Vault({ session }) {
           >
             {theme === 'dark' ? <Sun /> : <Moon />}
           </Button>
+          <Button variant="outline" size="icon" onClick={() => setAccountOpen(true)} title="Account">
+            <UserRound />
+          </Button>
           <Button variant="outline" onClick={() => supabase.auth.signOut()} title="Sign out">
             <LogOut /> <span className="hidden sm:inline">Sign out</span>
           </Button>
@@ -434,6 +440,10 @@ export default function Vault({ session }) {
           onRestored={(restored) => setSnippets((prev) => [...restored, ...prev])}
           onClose={() => setBackingUp(false)}
         />
+      )}
+
+      {accountOpen && (
+        <AccountSettings session={session} onClose={() => setAccountOpen(false)} />
       )}
     </div>
   )

@@ -7,20 +7,42 @@ import { Card, CardContent } from '@/components/ui/card'
 import Logo from './Logo'
 import Wordmark from './Wordmark'
 
+const MIN_PASSWORD_LENGTH = 8
+
 export default function Auth() {
-  const [mode, setMode] = useState('signin') // 'signin' | 'signup'
+  const [mode, setMode] = useState('signin') // 'signin' | 'signup' | 'forgot'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState(null) // { type: 'error' | 'info', text }
   const [busy, setBusy] = useState(false)
+
+  function switchMode(next) {
+    setMode(next)
+    setMessage(null)
+  }
 
   async function handleSubmit(e) {
     e.preventDefault()
     setBusy(true)
     setMessage(null)
     try {
-      if (mode === 'signup') {
-        const { error } = await supabase.auth.signUp({ email, password })
+      if (mode === 'forgot') {
+        // Supabase always returns success here regardless of whether the
+        // email is registered — don't say anything more specific, so this
+        // can't be used to check which emails have an account.
+        await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin,
+        })
+        setMessage({
+          type: 'info',
+          text: "If an account exists for that email, we've sent a password reset link.",
+        })
+      } else if (mode === 'signup') {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: window.location.origin },
+        })
         if (error) throw error
         setMessage({
           type: 'info',
@@ -66,19 +88,38 @@ export default function Auth() {
                   className="mt-1.5"
                 />
               </div>
-              <div className="mt-4">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="mt-1.5"
-                />
-              </div>
+
+              {mode !== 'forgot' && (
+                <div className="mt-4">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Password</Label>
+                    {mode === 'signin' && (
+                      <button
+                        type="button"
+                        onClick={() => switchMode('forgot')}
+                        className="text-xs font-medium text-primary hover:underline"
+                      >
+                        Forgot password?
+                      </button>
+                    )}
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    required
+                    minLength={MIN_PASSWORD_LENGTH}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="mt-1.5"
+                  />
+                  {mode === 'signup' && (
+                    <p className="mt-1.5 text-xs text-muted-foreground">
+                      At least {MIN_PASSWORD_LENGTH} characters.
+                    </p>
+                  )}
+                </div>
+              )}
 
               {message && (
                 <p
@@ -93,24 +134,33 @@ export default function Auth() {
               )}
 
               <Button type="submit" loading={busy} className="mt-5 w-full">
-                {mode === 'signin' ? 'Sign in' : 'Create account'}
+                {mode === 'signin' ? 'Sign in' : mode === 'signup' ? 'Create account' : 'Send reset link'}
               </Button>
             </form>
           </CardContent>
         </Card>
 
         <p className="mt-4 text-center text-sm text-muted-foreground">
-          {mode === 'signin' ? "Don't have an account? " : 'Already have an account? '}
-          <button
-            type="button"
-            onClick={() => {
-              setMode(mode === 'signin' ? 'signup' : 'signin')
-              setMessage(null)
-            }}
-            className="font-semibold text-primary hover:underline"
-          >
-            {mode === 'signin' ? 'Sign up' : 'Sign in'}
-          </button>
+          {mode === 'forgot' ? (
+            <button
+              type="button"
+              onClick={() => switchMode('signin')}
+              className="font-semibold text-primary hover:underline"
+            >
+              Back to sign in
+            </button>
+          ) : (
+            <>
+              {mode === 'signin' ? "Don't have an account? " : 'Already have an account? '}
+              <button
+                type="button"
+                onClick={() => switchMode(mode === 'signin' ? 'signup' : 'signin')}
+                className="font-semibold text-primary hover:underline"
+              >
+                {mode === 'signin' ? 'Sign up' : 'Sign in'}
+              </button>
+            </>
+          )}
         </p>
       </div>
     </div>
