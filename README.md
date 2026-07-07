@@ -168,7 +168,34 @@ npm run tauri build
 ```
 
 Produces an `.exe` (NSIS) and `.msi` installer under
-`desktop/src-tauri/target/release/bundle/`.
+`desktop/src-tauri/target/release/bundle/`. Both are real installers, not
+just a bare executable — they already register a desktop shortcut, a Start
+Menu shortcut (which is how the app becomes findable via Windows Search),
+and a proper uninstaller listed in "Apps & Features".
+
+**Releases and auto-updates.** Every install checks once on launch for a
+newer version; if one exists, a banner appears and the update installs +
+restarts only when clicked — never silently in the background. To publish a
+new version:
+
+1. Bump the `version` field in `desktop/package.json` (keep
+   `desktop/src-tauri/tauri.conf.json`'s version in sync too).
+2. Push to `main`.
+
+A GitHub Actions workflow (`release-desktop.yml`) then builds the
+installer, cryptographically signs the update files, and publishes a
+GitHub Release with the installer, the signed update manifest
+(`latest.json`), and the source code (GitHub attaches this to every tagged
+release automatically — nothing to configure). Existing installs pick up
+the new version the next time they check.
+
+This requires two repository secrets — `TAURI_SIGNING_PRIVATE_KEY` and
+`TAURI_SIGNING_PRIVATE_KEY_PASSWORD` — from a keypair generated once via
+`npx tauri signer generate`. The private key must **never** be committed;
+only its corresponding `.pub` file (already in this repo, safe to be
+public) is used to verify update signatures. Signing only happens in CI —
+your local machine never needs the private key, so `npm run tauri build`
+works the same with or without it.
 
 ## Backups
 
