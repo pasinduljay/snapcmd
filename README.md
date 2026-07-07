@@ -97,10 +97,11 @@ on, every time you push a change to `main`, Vercel redeploys automatically.
    npm install
    ```
 
-3. Create your environment file:
+3. Create your environment file (`cp` works in Git Bash/WSL/macOS/Linux; use
+   `copy` instead if you're in Windows Command Prompt):
 
    ```
-   copy .env.example .env
+   cp .env.example .env
    ```
 
    Open `.env` and fill in the two values from your Supabase project:
@@ -129,8 +130,10 @@ snippets, no separate account.
 ```
 cd extension
 npm install
-copy .env.example .env
+cp .env.example .env
 ```
+
+(`copy` instead of `cp` in Windows Command Prompt.)
 
 Fill in `.env` with the same two values as `webapp/.env`, then:
 
@@ -141,6 +144,18 @@ npm run build
 In Chrome, go to `chrome://extensions`, turn on **Developer mode** (top
 right), click **Load unpacked**, and select `extension/dist`. Click the
 extension's icon to open the popup.
+
+**Releases:** bump the `version` field in both `extension/package.json` and
+`extension/public/manifest.json`, and push to `main`. A GitHub Actions
+workflow (`release-extension.yml`) builds it, zips `dist/`, and publishes a
+GitHub Release with auto-generated notes (grouped commits, contributors —
+same format GitHub shows on any release page) and the zip attached. Needs
+two more repository secrets, same values as `webapp/.env`:
+
+| Secret name | Value |
+|---|---|
+| `VITE_SUPABASE_URL` | your Supabase Project URL |
+| `VITE_SUPABASE_ANON_KEY` | your Supabase Publishable key |
 
 **Email/password sign-in works immediately.** Google sign-in needs one-time
 setup, same idea as the Resend setup earlier — external services only you
