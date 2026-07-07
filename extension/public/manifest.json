@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Snapcmd",
+  "version": "0.1.0",
+  "description": "Your commands, one search away.",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "permissions": ["storage", "identity"]
+}
