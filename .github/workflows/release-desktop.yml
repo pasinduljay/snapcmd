@@ -1,0 +1,66 @@
+name: Release desktop app
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "package.json"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history, needed for auto-generated release notes
+
+      - name: Read version
+        id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $env:GITHUB_OUTPUT
+
+      - name: Check if this version was already released
+        id: check
+        run: |
+          $ver = "v${{ steps.version.outputs.version }}"
+          $status = node -e "fetch('https://api.github.com/repos/${{ github.repository }}/releases/tags/' + process.argv[1]).then(r => console.log(r.status))" $ver
+          if ($status.Trim() -eq "200") {
+            echo "exists=true" >> $env:GITHUB_OUTPUT
+          } else {
+            echo "exists=false" >> $env:GITHUB_OUTPUT
+          }
+
+      - name: Setup Node
+        if: steps.check.outputs.exists == 'false'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Rust
+        if: steps.check.outputs.exists == 'false'
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install frontend dependencies
+        if: steps.check.outputs.exists == 'false'
+        run: npm ci
+
+      - name: Build and release
+        if: steps.check.outputs.exists == 'false'
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: v${{ steps.version.outputs.version }}
+          releaseName: "Snapcmd v${{ steps.version.outputs.version }}"
+          generateReleaseNotes: true
+          releaseDraft: false
+          prerelease: false
+          includeUpdaterJson: true
+          args: --config src-tauri/tauri.release.conf.json
