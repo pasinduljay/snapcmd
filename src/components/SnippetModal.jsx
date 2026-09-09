@@ -4,7 +4,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogPanel,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,7 +12,6 @@ import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
 } from '@/components/ui/select'
@@ -71,7 +69,7 @@ export default function SnippetModal({ snippet, categories, onSave, onClose }) {
             </div>
           </DialogHeader>
 
-          <DialogPanel className="flex flex-col gap-4 p-0 pt-1">
+          <div className="flex flex-col gap-3.5 pt-1">
             <div>
               <Label htmlFor="snippet-title" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Title
@@ -82,6 +80,7 @@ export default function SnippetModal({ snippet, categories, onSave, onClose }) {
                 autoComplete="off"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Kill process by PID"
                 className="mt-1.5 rounded-xl border-border/80"
               />
             </div>
@@ -98,6 +97,7 @@ export default function SnippetModal({ snippet, categories, onSave, onClose }) {
                 spellCheck="false"
                 value={command}
                 onChange={(e) => setCommand(e.target.value)}
+                placeholder="taskkill /PID {pid} /F"
                 className="mt-1.5 w-full rounded-xl border border-border/80 bg-muted/40 p-3 font-mono text-xs leading-relaxed text-foreground placeholder:text-muted-foreground/60 transition-colors duration-150 focus:border-primary focus:outline-none dark:bg-black/45 dark:border-white/10 dark:text-slate-200"
               />
             </div>
@@ -109,7 +109,9 @@ export default function SnippetModal({ snippet, categories, onSave, onClose }) {
                 </Label>
                 <Select value={category} onValueChange={setCategory}>
                   <SelectTrigger className="mt-1.5 rounded-xl border-border/80">
-                    <SelectValue />
+                    <span className="flex-1 truncate text-left">
+                      {category === '__new__' ? '+ New category…' : category}
+                    </span>
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border-border/80">
                     {categories.map((c) => (
@@ -133,7 +135,9 @@ export default function SnippetModal({ snippet, categories, onSave, onClose }) {
                     autoComplete="off"
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
+                    placeholder="Enter category name…"
                     className="mt-1.5 rounded-xl border-border/80"
+                    autoFocus
                   />
                 </div>
               ) : (
@@ -146,6 +150,7 @@ export default function SnippetModal({ snippet, categories, onSave, onClose }) {
                     autoComplete="off"
                     value={tags}
                     onChange={(e) => setTags(e.target.value)}
+                    placeholder="comma separated (optional)"
                     className="mt-1.5 rounded-xl border-border/80"
                   />
                 </div>
@@ -162,6 +167,7 @@ export default function SnippetModal({ snippet, categories, onSave, onClose }) {
                   autoComplete="off"
                   value={tags}
                   onChange={(e) => setTags(e.target.value)}
+                  placeholder="comma separated (optional)"
                   className="mt-1.5 rounded-xl border-border/80"
                 />
               </div>
@@ -187,7 +193,7 @@ export default function SnippetModal({ snippet, categories, onSave, onClose }) {
               </p>
             )}
 
-            <div className="mt-3 flex items-center justify-end gap-2.5 pt-2">
+            <div className="mt-2 flex items-center justify-end gap-2.5 pt-2">
               <Button
                 type="button"
                 variant="outline"
@@ -204,7 +210,7 @@ export default function SnippetModal({ snippet, categories, onSave, onClose }) {
                 Save snippet
               </Button>
             </div>
-          </DialogPanel>
+          </div>
         </form>
       </DialogContent>
     </Dialog>
