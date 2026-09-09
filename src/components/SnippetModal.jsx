@@ -80,7 +80,6 @@ export default function SnippetModal({ snippet, categories, onSave, onClose }) {
                 autoComplete="off"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Kill process by PID"
                 className="mt-1.5 rounded-xl border-border/80"
               />
             </div>
@@ -97,7 +96,6 @@ export default function SnippetModal({ snippet, categories, onSave, onClose }) {
                 spellCheck="false"
                 value={command}
                 onChange={(e) => setCommand(e.target.value)}
-                placeholder="taskkill /PID {pid} /F"
                 className="mt-1.5 w-full rounded-xl border border-border/80 bg-muted/40 p-3 font-mono text-xs leading-relaxed text-foreground placeholder:text-muted-foreground/60 transition-colors duration-150 focus:border-primary focus:outline-none dark:bg-black/45 dark:border-white/10 dark:text-slate-200"
               />
             </div>
